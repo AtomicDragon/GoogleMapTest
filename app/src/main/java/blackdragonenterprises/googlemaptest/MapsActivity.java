@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CustomCap;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
@@ -60,8 +61,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int POLYLINE_STROKE_WIDTH_PX = 12;
     private static final int DEFAULT_ZOOM = 15;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
 
     private GoogleMap mMap;
+    private CameraPosition mCameraPosition;
     private FusedLocationProviderClient mFusedLocationClient;
     private Button btnFindPath;
     private EditText etOrigin;
@@ -73,13 +77,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressDialog progressDialog;
 
     private boolean mLocationPermissionGranted;
-    private static final boolean snapToRoads = true;
+    private static final boolean snapToRoads = false;
     private final LatLng mDefaultLocation = new LatLng(41.745037, -71.297715);
     private Location mLastKnownLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -118,6 +127,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getDeviceLocation();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
+            super.onSaveInstanceState(outState);
+        }
+    }
+
     private void sendRequest(){
         //Close keyboard
         View view = this.getCurrentFocus();
@@ -128,6 +146,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Pull origin and destination data
         String origin = etOrigin.getText().toString();
+        if(origin.toLowerCase().equals("current location"))
+        {
+            origin = mLastKnownLocation.getLatitude()+","+mLastKnownLocation.getLongitude();
+        }
         String destination = etDestination.getText().toString();
         String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
 
@@ -291,9 +313,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (location != null) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = location;
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            if(mCameraPosition != null){
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mCameraPosition.target, mCameraPosition.zoom));
+                            }
+                            else {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
