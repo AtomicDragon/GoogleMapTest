@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Mai Thanh Hiep on 4/3/2016.
+ * Used as a holder for routes used for directions
+ * Created by Atomic on 1/19/2018.
  */
 public class Route {
     public long distance;

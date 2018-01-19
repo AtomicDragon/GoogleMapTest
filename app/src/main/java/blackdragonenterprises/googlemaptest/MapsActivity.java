@@ -45,6 +45,11 @@ import Modules.DirectionFinderListener;
 import Modules.Route;
 import Modules.Waypoint;
 
+/**
+ * Makes a map and allows you to plot a course from point A to B.
+ * Created by Atomic on 1/19/2018.
+ */
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback , DirectionFinderListener{
 
     private static final String TAG = "MapsActivity";

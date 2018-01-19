@@ -3,6 +3,7 @@ package Modules;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
+ * Used to hold both the address and location of a waypoint
  * Created by Atomic on 1/19/2018.
  */
 

@@ -21,7 +21,8 @@ package Modules;
         import java.util.List;
 
 /**
- * Created by Mai Thanh Hiep on 4/3/2016.
+ * Creates directions from point A to point B with stops along the way.
+ * Created by Atomic on 1/19/2018.
  */
 public class DirectionFinder {
     private static final String TAG = "DirectionFinder";
