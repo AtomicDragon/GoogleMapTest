@@ -42,6 +42,8 @@ import java.util.List;
 
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
+import Modules.RoadFinder;
+import Modules.RoadFinderListener;
 import Modules.Route;
 import Modules.Waypoint;
 
@@ -50,7 +52,7 @@ import Modules.Waypoint;
  * Created by Atomic on 1/19/2018.
  */
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback , DirectionFinderListener{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback , DirectionFinderListener, RoadFinderListener{
 
     private static final String TAG = "MapsActivity";
 
@@ -71,6 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ProgressDialog progressDialog;
 
     private boolean mLocationPermissionGranted;
+    private static final boolean snapToRoads = true;
     private final LatLng mDefaultLocation = new LatLng(41.745037, -71.297715);
     private Location mLastKnownLocation;
 
@@ -123,6 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
+        //Pull origin and destination data
         String origin = etOrigin.getText().toString();
         String destination = etDestination.getText().toString();
         String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
@@ -138,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
+        //Find route
         try {
             new DirectionFinder(this, origin, destination, waypoints).execute();
         }
@@ -211,7 +216,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 polylineOptions.add(route.points.get(i));
 
             polylinePaths.add(mMap.addPolyline(polylineOptions));
+
+            //Initialize Snap to Roads after finding Directions
+            if(snapToRoads)
+            {
+                try {
+                    new RoadFinder(this, route.points).execute();
+                }
+                catch (UnsupportedEncodingException e)
+                {e.printStackTrace();}
+            }
         }
+    }
+
+    @Override
+    public void onRoadFinderStart()
+    {
+        progressDialog = ProgressDialog.show(this, "Please wait.",
+                "Snapping to roads", true);
+
+        if (polylinePaths != null) {
+            for (Polyline polyline:polylinePaths ) {
+                polyline.remove();
+            }
+        }
+    }
+
+    @Override
+    public void onRoadFinderSuccess(List<LatLng> points)
+    {
+        progressDialog.dismiss();
+        polylinePaths = new ArrayList<>();
+        PolylineOptions polylineOptions = new PolylineOptions().
+                geodesic(true).
+                color(Color.BLUE).
+                width(10);
+
+        for (int i = 0; i < points.size(); i++)
+            polylineOptions.add(points.get(i));
+
+        polylinePaths.add(mMap.addPolyline(polylineOptions));
     }
 
     private String calculateDistance(long d)
@@ -316,7 +360,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
             {
-                showMessageOKCancel("You need to allow access to Contacts",
+                showMessageOKCancel("You need to allow access to Location",
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
