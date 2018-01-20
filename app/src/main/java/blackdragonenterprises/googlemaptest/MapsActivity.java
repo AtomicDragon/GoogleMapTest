@@ -19,8 +19,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -68,8 +73,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CameraPosition mCameraPosition;
     private FusedLocationProviderClient mFusedLocationClient;
     private Button btnFindPath;
-    private EditText etOrigin;
-    private EditText etDestination;
+    private PlaceAutocompleteFragment etOriginFragment;
+    private PlaceAutocompleteFragment etDestinationFragment;
+    private Place etOrigin;
+    private Place etDestination;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Marker> waypointMarkers = new ArrayList<>();
@@ -95,8 +102,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         btnFindPath = (Button) findViewById(R.id.btnFindPath);
-        etOrigin = (EditText) findViewById(R.id.etOrigin);
-        etDestination = (EditText) findViewById(R.id.etDestination);
+
+        etOriginFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.etOrigin);
+        etOriginFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                etOrigin = place;
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
+        etDestinationFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.etDestination);
+        etDestinationFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                etDestination = place;
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
         btnFindPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,12 +175,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         //Pull origin and destination data
-        String origin = etOrigin.getText().toString();
-        if(origin.toLowerCase().equals("current location"))
+        String origin = etOrigin.getAddress().toString();
+        /*if(origin.toLowerCase().equals("current location"))
         {
             origin = mLastKnownLocation.getLatitude()+","+mLastKnownLocation.getLongitude();
-        }
-        String destination = etDestination.getText().toString();
+        }*/
+        String destination = etDestination.getAddress().toString();
         String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
 
         if(origin.isEmpty())
