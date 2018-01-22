@@ -176,12 +176,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Pull origin and destination data
         String origin = etOrigin.getAddress().toString();
-        /*if(origin.toLowerCase().equals("current location"))
+        if(origin.toLowerCase().equals("current location"))
         {
             origin = mLastKnownLocation.getLatitude()+","+mLastKnownLocation.getLongitude();
-        }*/
+        }
         String destination = etDestination.getAddress().toString();
-        String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
+        //String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
+        String waypoints = "";
 
         if(origin.isEmpty())
         {
@@ -325,7 +326,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String output = "";
         if (days!=0){output+= days + " days ";}
         if (hours!=0){output+= hours + " hours ";}
-        if (minutes!=0){output+= minutes + " min";}
+        if (minutes!=0 && days ==0){output+= minutes + " min";}
         return output;
     }
 

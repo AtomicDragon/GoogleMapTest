@@ -30,5 +30,11 @@ public class Route {
         startLocation = new LatLng(0,0);
 
         waypoints = new ArrayList<Waypoint>();
+        points = new ArrayList<LatLng>();
+    }
+
+    public void addPoints(List<LatLng> list)
+    {
+        points.addAll(list);
     }
 }

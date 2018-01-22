@@ -116,6 +116,15 @@ public class DirectionFinder {
                 JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
                 JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
                 JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
+                JSONArray jsonSteps = jsonLeg.getJSONArray("steps");
+                for(i=0; i < jsonSteps.length(); i++)
+                {
+                    JSONObject jsonStep = jsonSteps.getJSONObject(i);
+                    JSONObject jsonPolyline = jsonStep.getJSONObject("polyline");
+                    List<LatLng> points = decodePolyLine(jsonPolyline.getString("points"));
+                    route.addPoints(points);
+                    Log.d(TAG, points.size()+" points added");
+                }
 
                 route.distance+= jsonDistance.getInt("value");
                 route.duration+= jsonDuration.getInt("value");
@@ -124,7 +133,6 @@ public class DirectionFinder {
                 Waypoint stop = new Waypoint(jsonLeg.getString("end_address"), new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng")));
                 route.waypoints.add(stop);
             }
-            route.points = decodePolyLine(overview_polylineJson.getString("points"));
 
             routes.add(route);
         }
