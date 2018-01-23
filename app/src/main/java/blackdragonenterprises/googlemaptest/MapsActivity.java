@@ -149,6 +149,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.addMarker(new MarkerOptions()
+                .title("Kent Street Pond")
+                .position(new LatLng(41.753482, -71.297867)));
 
         getLocationPermission();
 
@@ -181,8 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             origin = mLastKnownLocation.getLatitude()+","+mLastKnownLocation.getLongitude();
         }
         String destination = etDestination.getAddress().toString();
-        //String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
-        String waypoints = "";
+        String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
 
         if(origin.isEmpty())
         {
