@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -41,7 +42,16 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.maps.android.data.kml.KmlLayer;
+import com.google.maps.android.data.kml.KmlPlacemark;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,9 +159,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.addMarker(new MarkerOptions()
+        /*mMap.addMarker(new MarkerOptions()
                 .title("Kent Street Pond")
-                .position(new LatLng(41.753482, -71.297867)));
+                .position(new LatLng(41.753482, -71.297867)));*/
+
+        try {
+            //Get file from storage
+            File kmlFile = new File(Environment.getExternalStorageDirectory()+"/Android/data/blackdragonenterprises.googlemaptest/kml_file.kml");
+            FileInputStream kmlInputStream= new FileInputStream(kmlFile);
+            KmlLayer layer = new KmlLayer(mMap, kmlInputStream, getApplicationContext());
+            //KmlLayer layer = new KmlLayer(mMap, R.raw.kml_file, getApplicationContext()); //Hard coded
+
+            layer.addLayerToMap();
+        }
+        catch (IOException e) {Log.d(TAG, e.toString());}
+        catch (XmlPullParserException e) {Log.d(TAG, e.toString());}
 
         getLocationPermission();
 
