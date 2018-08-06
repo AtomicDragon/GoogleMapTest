@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -44,7 +47,11 @@ import com.google.maps.android.data.kml.KmlPlacemark;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,18 +113,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btnFindPath = (Button) findViewById(R.id.btnFindPath);
 
-//        etOriginFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.etOrigin);
-//        etOriginFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                etOrigin = place;
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//
-//            }
-//        });
+        etOriginFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.etOrigin);
+        etOriginFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                etOrigin = place;
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
         etDestinationFragment = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.etDestination);
         etDestinationFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -158,21 +165,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
             //Get file from storage
-//            File kmlFile = new File(Environment.getExternalStorageDirectory()+"/Android/data/blackdragonenterprises.googlemaptest/kml_file.kml");
-//            FileInputStream kmlInputStream= new FileInputStream(kmlFile);
-//            KmlLayer layer = new KmlLayer(mMap, kmlInputStream, getApplicationContext());
-            //KmlLayer layer = new KmlLayer(mMap, R.raw.kml_file_edited, getApplicationContext()); //Hard coded
-            KmlLayer layer = new KmlLayer(mMap, R.raw.pchtouralexevie, getApplicationContext()); //Hard coded
+            File kmlFile = new File(Environment.getExternalStorageDirectory()+"/Android/data/blackdragonenterprises.googlemaptest/kml_file.kml");
+            FileInputStream kmlInputStream= new FileInputStream(kmlFile);
+            KmlLayer layer = new KmlLayer(mMap, kmlInputStream, getApplicationContext());
+            //KmlLayer layer = new KmlLayer(mMap, R.raw.kml_file, getApplicationContext()); //Hard coded
 
             layer.addLayerToMap();
-
-            for(com.google.maps.android.data.kml.KmlContainer container : layer.getContainers()){
-                for(com.google.maps.android.data.kml.KmlContainer nestedContainer : container.getContainers()){
-                    for(KmlPlacemark placemark : nestedContainer.getPlacemarks()){
-                        Log.i("MTAG", placemark.getStyleId());
-                    }
-                }
-            }
         }
         catch (IOException e) {Log.d(TAG, e.toString());}
         catch (XmlPullParserException e) {Log.d(TAG, e.toString());}
@@ -201,22 +199,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-        String origin = "";
-        String destination ="";
         //Pull origin and destination data
-//        String origin = etOrigin.getAddress().toString();
-//        if(origin.toLowerCase().equals("current location"))
-//        {
-//            origin = mLastKnownLocation.getLatitude()+","+mLastKnownLocation.getLongitude();
-//        }
-        if (mLastKnownLocation != null) {
+        String origin = etOrigin.getAddress().toString();
+        if(origin.toLowerCase().equals("current location"))
+        {
             origin = mLastKnownLocation.getLatitude()+","+mLastKnownLocation.getLongitude();
         }
-        if (etDestination != null) {
-            destination = etDestination.getAddress().toString();
-        }
-        //String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
-        String waypoints = "";
+        String destination = etDestination.getAddress().toString();
+        String waypoints = "32 Mallard Cove Barrington RI|Sowams School Barrington RI 02806|41 Linden Road Barrington RI";
 
         if(origin.isEmpty())
         {
