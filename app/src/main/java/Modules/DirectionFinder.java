@@ -46,6 +46,7 @@ public class DirectionFinder {
         new DownloadRawData().execute(createDirectionsUrl());
     }
 
+    //TODO: Configure if more than 25 waypoints
     private String createDirectionsUrl() throws UnsupportedEncodingException {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
@@ -97,7 +98,7 @@ public class DirectionFinder {
         if (data == null)
             return;
 
-        List<Route> routes = new ArrayList<Route>();
+        ArrayList<Route> routes = new ArrayList<>();
         JSONObject jsonData = new JSONObject(data);
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         for (int i = 0; i < jsonRoutes.length(); i++) {
@@ -110,8 +111,8 @@ public class DirectionFinder {
                 JSONObject jsonLeg = jsonLegs.getJSONObject(j);
                 if(j==0) {
                     JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
-                    route.startAddress = jsonLeg.getString("start_address");
-                    route.startLocation = new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng"));
+                    route.setStartAddress(jsonLeg.getString("start_address"));
+                    route.setStartLocation(new LatLng(jsonStartLocation.getDouble("lat"), jsonStartLocation.getDouble("lng")));
                 }
                 JSONObject jsonDistance = jsonLeg.getJSONObject("distance");
                 JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
@@ -120,18 +121,28 @@ public class DirectionFinder {
                 for(int k=0; k < jsonSteps.length(); k++)
                 {
                     JSONObject jsonStep = jsonSteps.getJSONObject(k);
+                    String htmlInstruction = jsonStep.getString("html_instructions");
+                    String stepDistanceText = jsonStep.getJSONObject("distance").getString("text");
+                    long stepDistanceValue = jsonStep.getJSONObject("distance").getLong("value");
+                    String stepDurationText = jsonStep.getJSONObject("duration").getString("text");
+                    long stepDurationValue = jsonStep.getJSONObject("duration").getLong("value");
+                    LatLng stepStartLocation = new LatLng(jsonStep.getJSONObject("start_location").getDouble("lat"),jsonStep.getJSONObject("start_location").getDouble("lng"));
+                    LatLng stepEndLocation = new LatLng(jsonStep.getJSONObject("end_location").getDouble("lat"),jsonStep.getJSONObject("end_location").getDouble("lng"));
+                    Step step = new Step(htmlInstruction, stepStartLocation, stepEndLocation, stepDistanceText, stepDistanceValue, stepDurationText, stepDurationValue);
+                    route.addStep(step);
+
                     JSONObject jsonPolyline = jsonStep.getJSONObject("polyline");
                     List<LatLng> points = decodePolyLine(jsonPolyline.getString("points"));
                     route.addPoints(points);
                     Log.d(TAG, points.size()+" points added");
                 }
 
-                route.distance+= jsonDistance.getInt("value");
-                route.duration+= jsonDuration.getInt("value");
-                route.endAddress = jsonLeg.getString("end_address");
-                route.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
-                Waypoint stop = new Waypoint(jsonLeg.getString("end_address"), new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng")));
-                route.waypoints.add(stop);
+                route.setDistance(jsonDistance.getInt("value"));
+                route.setDuration(jsonDuration.getInt("value"));
+                route.setEndAddress(jsonLeg.getString("end_address"));
+                route.setEndLocation(new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng")));
+                Waypoint waypoint = new Waypoint(jsonLeg.getString("end_address"), new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng")));
+                route.addWaypoints(waypoint);
             }
 
             routes.add(route);

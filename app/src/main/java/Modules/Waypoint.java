@@ -8,12 +8,31 @@ import com.google.android.gms.maps.model.LatLng;
  */
 
 public class Waypoint {
-    public String waypointAddress;
-    public LatLng waypointLocation;
+
+
+
+    private String waypointAddress;
+    private LatLng waypointLocation;
 
     public Waypoint(String s, LatLng l)
     {
         waypointAddress = s;
         waypointLocation = l;
+    }
+
+    public String getWaypointAddress() {
+        return waypointAddress;
+    }
+
+    public void setWaypointAddress(String waypointAddress) {
+        this.waypointAddress = waypointAddress;
+    }
+
+    public LatLng getWaypointLocation() {
+        return waypointLocation;
+    }
+
+    public void setWaypointLocation(LatLng waypointLocation) {
+        this.waypointLocation = waypointLocation;
     }
 }

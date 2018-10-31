@@ -7,19 +7,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"  >
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/etOrigin"
-        android:hint="Enter origin address"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
+    <!--<fragment-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/etOrigin"-->
+        <!--android:hint="@string/place_origin_hint"-->
+        <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>-->
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter destination address"
-        android:id="@+id/etDestination"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
+    <!--<fragment-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:hint="@string/place_destination_hint"-->
+        <!--android:id="@+id/etDestination"-->
+        <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,10 +60,24 @@
     </LinearLayout>
 
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <TextView
+        android:id="@+id/directions_text_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/next_stop_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 </LinearLayout>
