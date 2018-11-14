@@ -1,6 +1,7 @@
 package Modules;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.Tile;
 import com.google.android.gms.maps.model.TileProvider;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class CustomMapTileProvider implements TileProvider {
+    private static final String TAG = "TileProvider";
     private static final int TILE_WIDTH = 256;
     private static final int TILE_HEIGHT = 256;
     private static final int BUFFER_SIZE = 16 * 1024;
@@ -24,6 +26,7 @@ public class CustomMapTileProvider implements TileProvider {
 
     @Override
     public Tile getTile(int x, int y, int zoom) {
+        Log.d(TAG, "Tile x: "+x+" y: "+y+" zoom: "+zoom );
         byte[] image = readTileImage(x, y, zoom);
         return image == null ? null : new Tile(TILE_WIDTH, TILE_HEIGHT, image);
     }

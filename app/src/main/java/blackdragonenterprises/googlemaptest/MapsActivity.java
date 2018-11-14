@@ -188,11 +188,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        getLocationPermission();
+        getDeviceLocation();
+        startLocationUpdates();
         updateMapUi();
         addKMLLayer();
-        //getLocationPermission();
-        //getDeviceLocation();
-        //startLocationUpdates();
         addOfflineTilesOverlay();
     }
 
@@ -245,10 +245,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //TODO: Smart bounds based on what tiles you have?
             //mMap.setMinZoomPreference(9);
             mMap.setMaxZoomPreference(18);
-            mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(new LatLng(42.309942,-71.197414), new LatLng(42.423076,-70.971508)));
+            //mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(new LatLng(42.309942,-71.197414), new LatLng(42.423076,-70.971508)));
 
-            CameraUpdate upd = CameraUpdateFactory.newLatLngZoom(new LatLng(42.357149, -71.049786), 5);
+            CameraUpdate upd = CameraUpdateFactory.newLatLngZoom(new LatLng(19.117, 72.879), 0);
             mMap.moveCamera(upd);
+
+            mMap.addMarker(new MarkerOptions()
+                    .title("Mumbai Office")
+                    .position(new LatLng(19.116539, 72.880011)));
         }
 
     }
@@ -398,7 +402,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String msg = "Updated Location: " + Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
         Log.d(TAG, msg);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
 
         if (nextStepLocation !=null)
         {
